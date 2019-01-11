@@ -1,16 +1,17 @@
 package com.tuanhc;
 
 import com.tuanhc.model.CanBo;
+import com.tuanhc.model.CanBoResult;
 import com.tuanhc.model.PhongThi;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -69,5 +70,83 @@ public class Utils {
         }
 
         return phongThiList;
+    }
+
+    public void saveToFile(File file, List<CanBoResult> canBoResultList, String sheetName) throws IOException {
+        XSSFWorkbook workbook;
+        FileInputStream fis = null;
+        if (file.exists()) {
+            fis = new FileInputStream(file);
+            workbook = new XSSFWorkbook(fis);
+        } else
+        workbook = new XSSFWorkbook();
+
+        int sheetIndex = workbook.getSheetIndex(sheetName);
+        if (sheetIndex != -1) {
+            workbook.removeSheetAt(sheetIndex);
+        }
+        XSSFSheet sheet = workbook.createSheet(sheetName);
+
+        Cell cell;
+        Row row;
+
+
+        row = sheet.createRow(0);
+
+        //stt
+        cell = row.createCell(0, CellType.STRING);
+        cell.setCellValue("stt");
+
+        //ma_cb
+        cell = row.createCell(1, CellType.STRING);
+        cell.setCellValue("ma_cb");
+
+        //ho_ten
+        cell = row.createCell(2, CellType.STRING);
+        cell.setCellValue("ho_ten");
+
+        //co_quan
+        cell = row.createCell(3, CellType.STRING);
+        cell.setCellValue("co_quan");
+
+        //phong
+        cell = row.createCell(4, CellType.STRING);
+        cell.setCellValue("phong");
+
+        if (canBoResultList != null) {
+            for(int i = 0; i < canBoResultList.size(); i++) {
+                CanBoResult canBoResult = canBoResultList.get(i);
+
+                row = sheet.createRow(i + 1);
+
+                //stt
+                cell = row.createCell(0, CellType.STRING);
+                cell.setCellValue(String.valueOf(i + 1));
+
+                //ma_cb
+                cell = row.createCell(1, CellType.STRING);
+                cell.setCellValue(canBoResult.ma_cb);
+
+                //ho_ten
+                cell = row.createCell(2, CellType.STRING);
+                cell.setCellValue(canBoResult.ho_ten);
+
+                //co_quan
+                cell = row.createCell(3, CellType.STRING);
+                cell.setCellValue(canBoResult.co_quan);
+
+                //phong
+                cell = row.createCell(4, CellType.STRING);
+                cell.setCellValue(canBoResult.phong);
+            }
+        }
+
+        FileOutputStream outFile = new FileOutputStream(file);
+        workbook.write(outFile);
+        System.out.println("save result to file");
+
+        if (fis != null)
+            fis.close();
+        outFile.close();
     }
 }
